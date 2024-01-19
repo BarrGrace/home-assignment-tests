@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ethers } from 'ethers';
+import {  ethers } from 'ethers';
 import { Repository } from 'typeorm';
 import { Account } from './account.entity';
 import { CreateAccountDto } from './dto/create-account.dto';
@@ -16,6 +16,11 @@ export class AccountService {
     const account = new Account();
     
     // TODO: Create a new account using ethers module
+    const wallet = ethers.Wallet.createRandom();
+    console.log("Address:", wallet.address);
+    console.log("Private Key", wallet.privateKey);
+    console.log("Public Key:", wallet.publicKey)
+
 
     return this.accountRepository.save(account);
   }
