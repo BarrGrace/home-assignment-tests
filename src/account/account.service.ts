@@ -4,7 +4,6 @@ import {  ethers } from 'ethers';
 import { Repository } from 'typeorm';
 import { Account } from './account.entity';
 import { CreateAccountDto } from './dto/create-account.dto';
-import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class AccountService {
@@ -17,17 +16,17 @@ export class AccountService {
     const account = new Account();
     
     // TODO: Create a new account using ethers module
-    account.id = createAccountDto.user.id;
-
     // Crates a new random Wallet instance
     const wallet = ethers.Wallet.createRandom();
 
     // Add the fields that are required to the Account class from wallet
     account.publicKey = wallet.publicKey;
     account.privateKey = wallet.privateKey;
+    account.id = new Date().valueOf();
+    account.user = createAccountDto.user;
     ///
 
-    return this.accountRepository.save(account);
+    return this.accountRepository.save(account); 
   }
 
   async findOne(id: number) {

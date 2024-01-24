@@ -16,6 +16,9 @@ export class PaymentService {
     const payment = new Payment();
 
     // TODO: Create a new payment using ethers module
+    payment.amount = createPaymentDto.amount;
+    
+
     
     return await this.paymentsRepository.save(payment);
   }

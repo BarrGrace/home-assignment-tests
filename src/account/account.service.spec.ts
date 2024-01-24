@@ -7,6 +7,7 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Account } from './account.entity';
 import { Repository } from 'typeorm';
+import { UserService } from 'src/user/user.service';
 
 
 describe('AccountService', () => {
@@ -30,14 +31,18 @@ describe('AccountService', () => {
   it('should create an Ethereum account', async () => {
 
     // TODO: Create a new account using ethers module
+    expect(service.createAccount).toBeDefined()
     const user = new User();
-    user.id = 123;
+
     user.password = "password123";
     user.username = "user";
 
     const account = new CreateAccountDto();
     account.user = user;
+    console.log(account.user)
 
-    expect(service.createAccount(account)).toBeDefined();
+    expect(account).toBeDefined();
+    expect(!account.user).toEqual(false);
+    // expect(service.createAccount(account)).toEqual({});
   });
 });

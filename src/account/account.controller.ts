@@ -3,6 +3,12 @@ import { AccountService } from './account.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { Account } from './account.entity';
 
+type my_user = {
+  name: string,
+  age: number,
+  city: string
+}
+
 @Controller('account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
