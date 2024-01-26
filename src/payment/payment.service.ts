@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ethers } from 'ethers';
+import { EtherscanProvider, ethers } from 'ethers';
 import { Repository } from 'typeorm';
 import { Payment } from './payment.entity';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -16,9 +16,17 @@ export class PaymentService {
     const payment = new Payment();
 
     // TODO: Create a new payment using ethers module
+    payment.id = new Date().valueOf();
     payment.amount = createPaymentDto.amount;
-    
+    payment.from = (await this.findOne(createPaymentDto.from)).from;
+    payment.to = (await this.findOne(createPaymentDto.to)).to;
 
+    let privateKey = payment.from.privateKey;
+    let wallet = new ethers.Wallet(privateKey)
+
+    const provider = new EtherscanProvider("HTTP://127.0.0.1:7545");
+    console.log(provider.getBalance)
+    
     
     return await this.paymentsRepository.save(payment);
   }
