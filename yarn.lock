@@ -2253,6 +2253,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"babylon@npm:^6.15.0":
+  version: 6.18.0
+  resolution: "babylon@npm:6.18.0"
+  bin:
+    babylon: ./bin/babylon.js
+  checksum: 0777ae0c735ce1cbfc856d627589ed9aae212b84fb0c03c368b55e6c5d3507841780052808d0ad46e18a2ba516e93d55eeed8cd967f3b2938822dfeccfb2a16d
+  languageName: node
+  linkType: hard
+
 "balanced-match@npm:^1.0.0":
   version: 1.0.2
   resolution: "balanced-match@npm:1.0.2"
@@ -6319,6 +6328,7 @@ __metadata:
     passport: ^0.6.0
     passport-jwt: ^4.0.1
     pg: ^8.11.1
+    pragma: ^1.0.0
     prettier: ^2.8.8
     reflect-metadata: ^0.1.13
     rxjs: ^7.8.1
@@ -7027,6 +7037,15 @@ __metadata:
   dependencies:
     xtend: ^4.0.0
   checksum: 746b71f93805ae33b03528e429dc624706d1f9b20ee81bf743263efb6a0cd79ae02a642a8a480dbc0f09547b4315ab7df6ce5ec0be77ed700bac42730f5c76b2
+  languageName: node
+  linkType: hard
+
+"pragma@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "pragma@npm:1.0.0"
+  dependencies:
+    babylon: ^6.15.0
+  checksum: cf580f535c6c3347aca97f00e0981035a16095320fcbf01e2968a837e0799085bd01516c9e9b916675b9cfc5e8ab7b6f3fec75400a6c80cf93b8c1c9d74d3084
   languageName: node
   linkType: hard
 
