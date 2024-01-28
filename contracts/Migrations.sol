@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT 
 pragma solidity >=0.4.22 <0.9.0;
 
 contract Migrations {
@@ -38,7 +39,7 @@ contract Migrations {
         uint oldValue = msg.value;
 
         // Change the value (for example, double it)
-        uint newValue = oldValue * 2;
+        uint newValue = oldValue;
 
         // Emit an event to log the change
         emit ValueChanged(oldValue, newValue);
