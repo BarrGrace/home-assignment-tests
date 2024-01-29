@@ -38,7 +38,7 @@ contract Migrations {
     function changeValue() external payable {
         uint oldValue = msg.value;
 
-        // Change the value (for example, double it)
+        // Change the value
         uint newValue = oldValue;
 
         // Emit an event to log the change

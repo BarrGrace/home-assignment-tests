@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Contract, JsonRpcProvider, Result, ethers } from "ethers";
+import { ethers } from "ethers";
 import { Repository } from 'typeorm';
 import { Account } from './account.entity';
 import { CreateAccountDto } from './dto/create-account.dto';
-import migration from '../../build/contracts/Migrations.json';
-import { User } from 'src/user/user.entity';
-import { error } from 'console';
-
+import CryptoJS from "crypto-js";
+// Not exposing the URL
+require('dotenv').config();
+const URL = process.env.URL;// Your server's URL
+import Web3 from 'web3';
 
 @Injectable()
 export class AccountService {
@@ -16,13 +17,12 @@ export class AccountService {
     private accountRepository: Repository<Account>
   ) {}
 
-
   async createAccount(createAccountDto: CreateAccountDto) {
     const account = new Account();
     
     // TODO: Create a new account using ethers module
     // Validation: such account exists?
-    const url = 'http://localhost:3000/user/' + createAccountDto.user.id.toString();
+    const url = [URL + "/user/" + createAccountDto.user.id.toString()].join();// Concatenate at O(n)
     fetch(url)
       .then((data) => data.json())
         .then((user) => {
@@ -38,23 +38,19 @@ export class AccountService {
 
     // Add the fields that are required to the Account class from wallet
     account.publicKey = wallet.publicKey;
-    account.privateKey = wallet.privateKey;
+    // Keep privatekey a secret when sending it - no one can seal it
+    account.privateKey = CryptoJS.AES.encrypt(
+      wallet.privateKey, 
+      createAccountDto.user.password
+    ).toString();
+    // Decrypt: in the client side
+    // const decreypt = CryptoJS.AES.decrypt(encrypt_privateKey, 'password');
+    // const privatekey = decreypt.toString(CryptoJS.enc.Utf8);
+
     // Can also create autimaticly an id by the @PrimaryGeneratedColumn decorator
     account.id = new Date().valueOf(); // Will give a different number 
 
-    
-    // const RPC = "HTTP://127.0.0.1:7545"
-    // const provider = new JsonRpcProvider(RPC) 
-    
-    // const network_id = parseInt((await provider.getNetwork()).chainId.toString());
-    // const network_address = migration.networks[network_id].address
-
-    // const contract = new ethers.Contract(account.publicKey, migration.abi, provider);
-    // contract.
-
-    
-  
-    // return this.accountRepository.save(account);
+    return await this.accountRepository.save(account);
   }
 
   async findOne(id: number) {

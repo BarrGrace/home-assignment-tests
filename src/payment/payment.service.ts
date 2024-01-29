@@ -1,9 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EtherscanProvider, ethers } from 'ethers';
+import { JsonRpcProvider, ethers } from 'ethers';
 import { Repository } from 'typeorm';
 import { Payment } from './payment.entity';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import migration from '../../build/contracts/Migrations.json';
+// Not exposing the RPC server
+require('dotenv').config()
+const RPC = process.env.RPC // Your RPC server
+
 
 @Injectable()
 export class PaymentService {
@@ -13,41 +18,47 @@ export class PaymentService {
   ) {}
   // async create(createPaymentDto: CreatePaymentDto): Promise<Payment> {
   async create(createPaymentDto: CreatePaymentDto) {
+    
     const payment = new Payment();
 
     // TODO: Create a new payment using ethers module
+    // Add the fields into the new payment:
     payment.id = new Date().valueOf();
     payment.amount = createPaymentDto.amount;
-    const something = fetch("http://localhost:3000/account/3")
-      .then((e) => e.json())
-      .then((e) => console.log(e));
     
-    // payment.to = (await this.findOne(createPaymentDto.to))  
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Transaction viea SOL
-    // const RPC = "HTTP://127.0.0.1:7545"
-    // const provider = new JsonRpcProvider(RPC) 
+    // Two ways to make a transaction:
+    // 1) Transaction via SOL:
+    const provider = new JsonRpcProvider(RPC) 
     
-    // const network_id = parseInt((await provider.getNetwork()).chainId.toString());
-    // const network_address = migration.networks[network_id].address
+    // Get the network adress from migration.json file:
+    try {
+      const network_id = parseInt((await provider.getNetwork()).chainId.toString());
+      const network_address = migration.networks[network_id].address;
 
-    // const singer = await provider.getSigner(0); 
-    // const contracts = new ethers.Contract(network_address, migration.abi, singer);
-    // await contracts.changeValue({
-    //   value: ethers.parseEther('10')
-    // })
+      // Create a contract:
+      const singer = await provider.getSigner(createPaymentDto.from); 
+      const contracts = new ethers.Contract(network_address, migration.abi, singer);
+
+      // Change to the right amount that is needed to be sent:
+      await contracts.changeValue({
+        value: ethers.parseEther(createPaymentDto.amount.toString())
+      })
     
-    // contracts.sendEther("0xf1dAC20B7c8F6A5013CE07012db023866C7A6133").then(() => console.log("Sent"));
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Transaction via ethers:
-    // const singer = await provider.getSigner("0xf1dAC20B7c8F6A5013CE07012db023866C7A6133");
-    // const transaction = {
-    //   from: "0xf1dAC20B7c8F6A5013CE07012db023866C7A6133",
-    //   to: "0x233Ca9680Ec827232D24efc2fF333aB74c377E9d",
-    //   value: ethers.parseEther("10")
-    // }
-    // singer.sendTransaction(transaction).then(() => console.log("Send transaction"))
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      contracts.sendEther(createPaymentDto.to).then(() => console.log("Transacion was sent"));
+      // 2) Transaction via ethers:
+      // const provider = new JsonRpcProvider(RPC);
+      // const singer = await provider.getSigner(createPaymentDto.from);
+      // const transaction = {
+      //   from: createPaymentDto.from.toString(),
+      //   to: createPaymentDto.to.toString(),
+      //   value: ethers.parseEther(createPaymentDto.amount.toString())
+      // }
+      // singer.sendTransaction(transaction).then(() => console.log("Transaction was sent"))
+
+    }catch(err) {
+      throw Error("Could't find address")
+    }
+
     // return await this.paymentsRepository.save(payment);
   }
 
